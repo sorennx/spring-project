@@ -1,10 +1,27 @@
 services:
   mysql:
-    image: 'mysql:latest'
+    image: "mysql:latest"
     environment:
-      - 'MYSQL_DATABASE=mydatabase'
-      - 'MYSQL_PASSWORD=secret'
-      - 'MYSQL_ROOT_PASSWORD=verysecret'
-      - 'MYSQL_USER=myuser'
+      - "MYSQL_DATABASE=spring-db"
+      - "MYSQL_USER=spring-db"
+      - "MYSQL_PASSWORD=root"
+      - "MYSQL_ROOT_PASSWORD=verysecret"
     ports:
-      - '3306'
+      - "3306"
+    networks:
+      - spring
+
+  phpmyadmin:
+    image: "phpmyadmin:latest"
+    ports:
+      - 8082:80
+    networks:
+      - spring
+    environment:
+      - PMA_ARBITRARY=1
+    depends_on:
+      - mysql
+
+networks:
+  spring:
+    driver: bridge
