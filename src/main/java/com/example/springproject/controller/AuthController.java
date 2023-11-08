@@ -41,7 +41,7 @@ public class AuthController {
   ) {
     Authentication authentication = authenticationManager.authenticate(
       new UsernamePasswordAuthenticationToken(
-        loginDto.getUsernameOrEmail(),
+        loginDto.getEmail(),
         loginDto.getPassword()
       )
     );
@@ -52,14 +52,6 @@ public class AuthController {
 
   @PostMapping("/register")
   public ResponseEntity<?> registerUser(@RequestBody RegisterDTO registerDTO) {
-    // add check for username exists in a DB
-    if (userRepository.existsByUsername(registerDTO.getUsername())) {
-      return new ResponseEntity<>(
-        "Username is already taken!",
-        HttpStatus.BAD_REQUEST
-      );
-    }
-
     // add check for email exists in DB
     if (userRepository.existsByEmail(registerDTO.getEmail())) {
       return new ResponseEntity<>(
@@ -70,8 +62,6 @@ public class AuthController {
 
     // create user object
     User user = new User();
-    user.setName(registerDTO.getName());
-    user.setUsername(registerDTO.getUsername());
     user.setEmail(registerDTO.getEmail());
     user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
 
