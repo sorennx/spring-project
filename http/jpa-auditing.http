@@ -5,7 +5,7 @@ Content-Type: application/json
 {
   "firstname": "Ali",
   "lastname": "Bouali",
-  "email":  "alibou@mail.com",
+  "email":  "managio@mail.com",
   "password": "password",
   "role":  "ADMIN"
 }
@@ -19,7 +19,7 @@ Authorization: Bearer {{auth-token}}
 Content-Type: application/json
 
 {
-  "author": "Alibou",
+  "author": "managio",
   "isbn": "12345"
 }
 
@@ -34,7 +34,7 @@ Content-Type: application/json
 
 {
   "id": 1,
-  "author": "Alibou 2",
+  "author": "managio 2",
   "isbn": "12345"
 }
 
