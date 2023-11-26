@@ -10,6 +10,7 @@ import com.springproject.managio.model.User;
 import com.springproject.managio.service.CompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/companies")
+@PreAuthorize("hasRole('ADMIN')")
 public class CompanyController {
     @Autowired
     private CompanyService companyService;
@@ -38,7 +40,6 @@ public class CompanyController {
     private CompanyDTO convertToDTO(Company company) {
         return new CompanyDTO(company.getId(), company.getName(), company.getAddress(), convertUserToDTO(company.getOwner()), company.getDescription(), convertToDTOs(company.getMembers()));
     }
-
 
     @GetMapping
     public ResponseEntity<CompanyDTO> getCompany() {
