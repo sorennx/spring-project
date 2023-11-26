@@ -1,13 +1,19 @@
 package com.springproject.managio.controller;
 
 import com.springproject.managio.dto.CompanyDTO;
+import com.springproject.managio.dto.CompanyMemberDTO;
 import com.springproject.managio.dto.CreateCompanyDTO;
 import com.springproject.managio.dto.UserDTO;
 import com.springproject.managio.model.Company;
+import com.springproject.managio.model.CompanyMember;
+import com.springproject.managio.model.User;
 import com.springproject.managio.service.CompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/companies")
@@ -15,14 +21,28 @@ public class CompanyController {
     @Autowired
     private CompanyService companyService;
 
-    private CompanyDTO convertToDTO(Company company) {
-        return new CompanyDTO(company.getId(), company.getName(), company.getAddress(), company.getOwner(), company.getDescription(), company.getUsers());
+    private UserDTO convertUserToDTO(User user) {
+        return new UserDTO(user.getId(), user.getFirstname(), user.getLastname(), user.getEmail(), user.getRole().toString());
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<CompanyDTO> getCompany(@PathVariable Integer id) {
-        Company company = companyService.getCompany(id);
-        return ResponseEntity.ok(convertToDTO(company));
+    private CompanyMemberDTO convertCompanyMemberToDTO(CompanyMember companyMember) {
+        return new CompanyMemberDTO(companyMember.getId(), companyMember.getFirstname(), companyMember.getLastname(), companyMember.getEmail(), companyMember.getBirthdate(), companyMember.getSalary());
+    }
+
+    private List<CompanyMemberDTO> convertToDTOs(List<CompanyMember> companyMembers) {
+        return companyMembers.stream()
+                .map(this::convertCompanyMemberToDTO)
+                .collect(Collectors.toList());
+    }
+
+    private CompanyDTO convertToDTO(Company company) {
+        return new CompanyDTO(company.getId(), company.getName(), company.getAddress(), convertUserToDTO(company.getOwner()), company.getDescription(), convertToDTOs(company.getMembers()));
+    }
+
+
+    @GetMapping
+    public ResponseEntity<CompanyDTO> getCompany() {
+        return ResponseEntity.ok(convertToDTO(companyService.getCompany()));
     }
 
     @PostMapping
@@ -31,18 +51,17 @@ public class CompanyController {
         return ResponseEntity.ok(convertToDTO(savedCompany));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<CompanyDTO> updateCompany(@PathVariable Integer id, @RequestBody CreateCompanyDTO companyDTO) {
-        Company updatedCompany = companyService.updateCompany(id, companyDTO);
-        if (updatedCompany != null) {
-            return ResponseEntity.ok(convertToDTO(updatedCompany));
-        }
-        return ResponseEntity.notFound().build();
+    @PutMapping
+    public ResponseEntity<CompanyDTO> updateCompany(@RequestBody CreateCompanyDTO companyDTO) {
+        Company updatedCompany = companyService.updateCompany(companyDTO);
+
+        return updatedCompany != null ? ResponseEntity.ok(convertToDTO(updatedCompany)) : ResponseEntity.notFound().build();
+
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCompany(@PathVariable Integer id) {
-        companyService.deleteCompany(id);
+    @DeleteMapping
+    public ResponseEntity<Void> deleteCompany() {
+        companyService.deleteCompany();
         return ResponseEntity.ok().build();
     }
 }

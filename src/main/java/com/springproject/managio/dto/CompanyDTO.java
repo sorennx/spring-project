@@ -1,6 +1,5 @@
 package com.springproject.managio.dto;
 
-import com.springproject.managio.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,7 +16,7 @@ public class CompanyDTO {
     private Integer id;
     private String name;
     private String address;
-    private String owner;
+    private UserDTO owner;
     private String description;
-    private List<User> users;
+    private List<CompanyMemberDTO> members;
 }

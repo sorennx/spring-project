@@ -1,6 +1,6 @@
 package com.springproject.managio.controller;
 
-import com.springproject.managio.dto.AuthenticationDTO;
+import com.springproject.managio.dto.LoginDTO;
 import com.springproject.managio.resource.AuthenticationResource;
 import com.springproject.managio.service.AuthenticationService;
 import com.springproject.managio.dto.RegisterDTO;
@@ -30,7 +30,7 @@ public class AuthenticationController {
   }
   @PostMapping("/authenticate")
   public ResponseEntity<AuthenticationResource> authenticate(
-      @RequestBody AuthenticationDTO request
+      @RequestBody LoginDTO request
   ) {
     return ResponseEntity.ok(service.authenticate(request));
   }
