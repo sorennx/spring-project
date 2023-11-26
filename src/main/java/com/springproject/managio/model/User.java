@@ -34,8 +34,8 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user")
     private List<Token> tokens;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "company_id")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "company_id", nullable = true)
     private Company company;
 
     @Override
@@ -53,6 +53,8 @@ public class User implements UserDetails {
         return email;
     }
 
+
+    // Methods required by Spring Security UserDetails interface
     @Override
     public boolean isAccountNonExpired() {
         return true;

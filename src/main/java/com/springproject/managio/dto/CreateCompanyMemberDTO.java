@@ -1,19 +1,18 @@
 package com.springproject.managio.dto;
 
-import com.springproject.managio.permission.Role;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegisterDTO {
+public class CreateCompanyMemberDTO {
 
     @NotNull
     @Size(min = 1, max = 50)
@@ -28,8 +27,10 @@ public class RegisterDTO {
     private String email;
 
     @NotNull
-    @Size(min = 8, max = 100)
-    private String password;
+    @Past
+    private Date birthdate;
 
-    private Role role;
+    @NotNull
+    @Min(0)
+    private Double salary;
 }

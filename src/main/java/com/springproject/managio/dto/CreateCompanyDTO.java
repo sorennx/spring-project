@@ -1,6 +1,7 @@
 package com.springproject.managio.dto;
 
-import com.springproject.managio.permission.Role;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,8 +12,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateCompanyDTO {
-  private String name;
-  private String address;
-  private String owner;
-  private String description;
+
+    @NotNull
+    @Size(min = 1, max = 100)
+    private String name;
+
+    @NotNull
+    @Size(min = 1, max = 200)
+    private String address;
+
+    @Size(max = 500)
+    private String description;
 }

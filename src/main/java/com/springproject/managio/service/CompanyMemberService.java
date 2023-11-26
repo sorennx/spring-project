@@ -1,14 +1,19 @@
 package com.springproject.managio.service;
 
-import com.springproject.managio.dto.AddCompanyMemberDTO;
-import com.springproject.managio.dto.UserDTO;
+import com.springproject.managio.dto.CreateCompanyMemberDTO;
 import com.springproject.managio.model.Company;
+import com.springproject.managio.model.CompanyMember;
 import com.springproject.managio.model.User;
-import com.springproject.managio.permission.Role;
+import com.springproject.managio.repository.CompanyMemberRepository;
 import com.springproject.managio.repository.CompanyRepository;
 import com.springproject.managio.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,39 +23,65 @@ public class CompanyMemberService {
     @Autowired
     private CompanyRepository companyRepository;
     @Autowired
+    private CompanyMemberRepository companyMemberRepository;
+    @Autowired
     private UserRepository userRepository;
 
-    public void addMember(Integer companyId, AddCompanyMemberDTO addCompanyMemberDTO) {
-        Company company = getCompany(companyId);
-        User user = userRepository.findById(addCompanyMemberDTO.getId()).orElse(null);
-        if (user != null) {
-            user.setRole(Role.valueOf(addCompanyMemberDTO.getRole()));
-            company.getUsers().add(user);
-            user.setCompany(company);
+    public User getOwner() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return userRepository.findByEmail(authentication.getName()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }
+
+    public Company getOwnerCompany() {
+        return getOwner().getCompany();
+    }
+
+    public void createMember(CreateCompanyMemberDTO createCompanyMemberDTO) {
+        Company company = getOwnerCompany();
+
+        if (company != null) {
+            CompanyMember companyMember = new CompanyMember();
+            companyMember.setCompany(company);
+            companyMember.setFirstname(createCompanyMemberDTO.getFirstname());
+            companyMember.setLastname(createCompanyMemberDTO.getLastname());
+            companyMember.setEmail(createCompanyMemberDTO.getEmail());
+            companyMember.setBirthdate(createCompanyMemberDTO.getBirthdate());
+            companyMember.setSalary(createCompanyMemberDTO.getSalary());
+
+            companyMemberRepository.save(companyMember);
+            company.getMembers().add(companyMember);
             companyRepository.save(company);
-            userRepository.save(user);
         }
     }
 
+    public void removeMember(Integer userId) {
+        Company company = getOwnerCompany();
 
-    public void removeMember(Integer companyId, Integer userId) {
-        Company company = getCompany(companyId);
-        User user = userRepository.findById(userId).orElse(null);
-        if (user != null && company != null) {
-            company.getUsers().remove(user);
-            user.setCompany(null);
-            companyRepository.save(company);
-            userRepository.save(user);
+        if (company != null) {
+            List<CompanyMember> companyMembers = company.getMembers();
+            CompanyMember companyMember = companyMembers.stream()
+                    .filter(member -> member.getId().equals(userId))
+                    .findFirst()
+                    .orElse(null);
+
+            if (companyMember != null) {
+                companyMembers.remove(companyMember);
+                companyRepository.save(company);
+                companyMemberRepository.delete(companyMember);
+            } else {
+                throw new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Company member not found"
+                );
+            }
+        } else {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Company not found"
+            );
         }
     }
 
-    private Company getCompany(Integer companyId) {
-        return companyRepository.findById(companyId).orElse(null);
-    }
-
-    public List<User> getAllUsers(Integer companyId) {
-        Company company = getCompany(companyId);
-        return new ArrayList<>(company.getUsers());
+    public List<CompanyMember> getAllMembers() {
+        return new ArrayList<>(getOwnerCompany().getMembers());
     }
 
 }
