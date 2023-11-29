@@ -1,6 +1,7 @@
 package com.springproject.managio.audit;
 
 import com.springproject.managio.model.User;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -10,7 +11,7 @@ import java.util.Optional;
 
 public class ApplicationAuditAware implements AuditorAware<Integer> {
     @Override
-    public Optional<Integer> getCurrentAuditor() {
+    public @NotNull Optional<Integer> getCurrentAuditor() {
         Authentication authentication =
                 SecurityContextHolder
                         .getContext()
