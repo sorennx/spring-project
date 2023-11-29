@@ -1,7 +1,7 @@
 package com.springproject.managio.controller;
 
-import com.springproject.managio.dto.CreateCompanyMemberDTO;
 import com.springproject.managio.dto.CompanyMemberDTO;
+import com.springproject.managio.dto.CreateCompanyMemberDTO;
 import com.springproject.managio.model.CompanyMember;
 import com.springproject.managio.service.CompanyMemberService;
 import jakarta.validation.Valid;

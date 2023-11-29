@@ -14,10 +14,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 
-import static com.springproject.managio.permission.Permission.*;
-import static com.springproject.managio.permission.Role.ADMIN;
-import static com.springproject.managio.permission.Role.MANAGER;
-import static org.springframework.http.HttpMethod.*;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
